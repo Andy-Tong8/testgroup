@@ -1,10 +1,12 @@
-const express = require('express')
-const app = express()
-const cors = require('cors')
-app.use(cors(), express.urlencoded({extended:true}), express.json())
+const express = require("express");
+const app = express();
+const cors = require("cors");
 
-require('./config/config')
-require('./models/model')
-require('./routes/routes')(app)
+app.use(cors(), express.json(), express.urlencoded({ extended: true }));
 
-app.listen(8000)
+//load models
+require("./models/projectmanager-models");
+require("./config/projectmanager-config");
+require("./routes/projectmanager-routes")(app);
+
+app.listen(8000);

@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Link, navigate } from '@reach/router'
-import DeleteButton from './DeleteButton'
-import PlayerHeader from './PlayerHeader'
-import AddCircleOutlinedIcon from '@material-ui/icons/AddCircleOutlined';
+// import AddCircleOutlinedIcon from '@material-ui/icons/AddCircleOutlined';
 import {
     Paper,
     FormControl,
@@ -108,34 +106,8 @@ const Dashboard = (props) => {
             </div>
             </CardContent></Card>
             </Paper>
-        <Button startIcon={<AddCircleOutlinedIcon />} style={{backgroundColor:"#9FC5F8", display:"inline-block", margin:"1px", textAlign: "left"}} onClick={goToNew}>Add New Project</Button>
+        <Button style={{backgroundColor:"#9FC5F8", display:"inline-block", margin:"1px", textAlign: "left"}} onClick={goToNew}>Add New Project</Button>
         </>
-        // <Paper elevation={3} style={styles.paper}>
-        // <div>
-        //     <PlayerHeader />
-        //     <h5 style={{textAlign: "left"}}>you are in dashboard.jsx</h5>
-        //     <table>
-        //         <thead>
-        //             <tr>
-        //                 <th >Player Name</th>
-        //                 <th>Preferred Position</th>
-        //                 <th onClick={sortDue}>Birthday (Sortable)</th>
-        //                 <th>Actions</th>
-        //             </tr>
-        //         </thead>
-        //         <tbody>
-        //             {state.map((item, index) => (
-        //                 <tr key={index}>
-        //                     <td><Link to={`/players/edit/${item._id}`}>{item.name}</Link></td>
-        //                     <td>{item.position}</td>
-        //                     <td onClick={(e)=> goToEdit(e,item)}>{item.birthday ? item.birthday.substring(0,10) : ""}</td>
-        //                     <td><DeleteButton playerId = {item._id} successCallback = {()=>deleteFromState()} /></td>
-        //                 </tr>
-        //             ))}
-        //         </tbody>
-        //     </table>
-        // </div>
-        // </Paper>
     )
 }
 

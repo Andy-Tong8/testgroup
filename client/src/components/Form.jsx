@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { navigate, Link } from "@reach/router";
-import moment from "moment";
 import {
   Paper,
   FormControl,
@@ -22,9 +21,7 @@ const styles = {
   },
   button: {
     width: "400px",
-    backgroundColor: "#9FC5F8",
-    
-    
+    backgroundColor: "#9FC5F8"
   }
 };
 
@@ -68,80 +65,85 @@ const Form = props => {
 
   const onSubmitHandler = e => {
     e.preventDefault();
-      console.log("you are in create onsumbit");
-      axios
-        .post("http://localhost:8000/api/create", formState)
-        .then(response => navigate("/"))
-        .catch(error => {
-          console.log("error is:", error.response);
-          if (error.response.data.name == "MongoError")
-          {
-            setErrorState({
-            name: "BACKEND: Project already exists!",
+    console.log("you are in create onsumbit");
+    axios
+      .post("http://localhost:8000/api/create", formState)
+      .then(response => navigate("/"))
+      .catch(error => {
+        console.log("error is:", error.response);
+        if (error.response.data.name == "MongoError") {
+          setErrorState({
+            name: "BACKEND: Project already exists!"
           });
-          }else{
+        } else {
           setErrorState({
             name: error.response.data.errors.name
               ? error.response.data.errors.name.message
               : "",
             dueDate: error.response.data.errors.dueDate
               ? error.response.data.errors.dueDate.message
-              : "",
-          });}
-          
-        });
+              : ""
+          });
+        }
+      });
   };
 
   return (
-      <>
-      <p style={{margin:"5px",textAlign:"right"}}><Link style={{marginRight: "10px"}} to="/">Back to Dashboard</Link></p>
-    <Paper elevation={3} style={styles.paper}>
-      <h2>Plan a new Project</h2>
-      <div>
-        <p style={{ color: "blue" }}>
-          {formState.name.length > 0 && formState.name.length < 3 && nameError}
-        </p>
-        {/* <p style={{ color: "blue" }}>{formState.dueDate.length === 0 && dueDateError}</p> */}
-        <p style={{ color: "red" }}>{errorState.name}</p>
-        <p style={{ color: "red" }}>{errorState.dueDate}</p>
+    <>
+      <p style={{ margin: "5px", textAlign: "right" }}>
+        <Link style={{ marginRight: "10px" }} to="/">
+          Back to Dashboard
+        </Link>
+      </p>
+      <Paper elevation={3} style={styles.paper}>
+        <h2>Plan a new Project</h2>
+        <div>
+          <p style={{ color: "blue" }}>
+            {formState.name.length > 0 &&
+              formState.name.length < 3 &&
+              nameError}
+          </p>
+          {/* <p style={{ color: "blue" }}>{formState.dueDate.length === 0 && dueDateError}</p> */}
+          <p style={{ color: "red" }}>{errorState.name}</p>
+          <p style={{ color: "red" }}>{errorState.dueDate}</p>
 
-        <form onSubmit={onSubmitHandler}>
-          <FormControl variant="outlined" style={styles.input}>
-            <InputLabel>Name</InputLabel>
-            <OutlinedInput
-              id="name"
-              type="text"
-              name="name"
-              onChange={onChangeHandler}
-            />
-          </FormControl>
-          <br />
-          <FormControl variant="outlined" style={styles.input}>
-            <TextField
-              id="dueDate"
-              name="dueDate"
-              label="Due Date"
-              type="date"
-              variant="outlined"
-              onChange={onChangeHandler}
-              InputLabelProps={{
-                shrink: true
-              }}
-            />
-          </FormControl>
-          <br />
-          <Button
-            style={styles.button}
-            type="submit"
-            varient="contained"
-            color="primary"
-            disabled={hasError}
-          >
-            Plan Project
-          </Button>
-        </form>
+          <form onSubmit={onSubmitHandler}>
+            <FormControl variant="outlined" style={styles.input}>
+              <InputLabel>Name</InputLabel>
+              <OutlinedInput
+                id="name"
+                type="text"
+                name="name"
+                onChange={onChangeHandler}
+              />
+            </FormControl>
+            <br />
+            <FormControl variant="outlined" style={styles.input}>
+              <TextField
+                id="dueDate"
+                name="dueDate"
+                label="Due Date"
+                type="date"
+                variant="outlined"
+                onChange={onChangeHandler}
+                InputLabelProps={{
+                  shrink: true
+                }}
+              />
+            </FormControl>
+            <br />
+            <Button
+              style={styles.button}
+              type="submit"
+              varient="contained"
+              color="primary"
+              disabled={hasError}
+            >
+              Plan Project
+            </Button>
+          </form>
 
-        {/* <form onSubmit={onSubmitHandler}>
+          {/* <form onSubmit={onSubmitHandler}>
         <label htmlFor="name">Name</label>
         <input
           id="name"
@@ -171,8 +173,8 @@ const Form = props => {
         <button type="submit" >Submit</button>
         <h2 onClick={callConsole}>console.log</h2>
       </form> */}
-      </div>
-    </Paper>
+        </div>
+      </Paper>
     </>
   );
 };
