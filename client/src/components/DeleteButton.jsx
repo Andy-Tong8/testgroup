@@ -1,6 +1,5 @@
 import React from 'react'
 import axios from 'axios';
-
 export default props => {
     const { playerId, successCallback } = props;
     const deletePlayer = e => {

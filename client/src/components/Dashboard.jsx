@@ -1,72 +1,141 @@
-import React, { useState, useEffect } from 'react';
-import { navigate, Link } from '@reach/router';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import { Link, navigate } from '@reach/router'
+import DeleteButton from './DeleteButton'
+import PlayerHeader from './PlayerHeader'
+import AddCircleOutlinedIcon from '@material-ui/icons/AddCircleOutlined';
+import {
+    Paper,
+    FormControl,
+    InputLabel,
+    OutlinedInput,
+    Button,
+    styled,
+    Card,
+    CardContent,
+} from '@material-ui/core';
+const styles = {
+    paper: {
+        minWidth: "95%", padding: "1rem", display:"flex", justifyContent: "space-evenly"
+    },
+    card: {
+        width: "30%", padding: "1rem", justifyContent: "space-evenly"
+    },
+    input: {
+        marginBottom: "1rem"
+    },
+    button: {
+        width: "100%"
+    }
+}
 
 const Dashboard = (props) => {
-    const [state, setState] = useState([]);
-    const [refresh, setRefresh] = useState(false);
-    const teamColors = ['white', 'red', 'blue', 'green']
-    useEffect(()=>{
-        axios.get('http://localhost:8000/api/find')
-        .then(response => setState(response.data))
-        .catch(error=>console.log(error))
-    },[refresh])
-
-    const buttonHandler = (e, item, buttonID) => {
-        console.log(item);
-        if(item.status[buttonID] === 0) {
-            item.status[buttonID] = 1;
+    const [state, setState] = useState([])
+    const [changeState, setchangeState] = useState(false)
+    const [sortdueDate, setSortdueDate] = useState(1);
+    
+    useEffect(() => {
+        console.log('you are in useeffect')
+        axios.get(`http://localhost:8000/api/readAll/${sortdueDate}`)
+            .then(response => setState([...response.data]))
+            .catch(error => console.log(error))
+    }, [changeState,sortdueDate])
+ 
+    const sortDue = (e) => {
+        setSortdueDate(-1*sortdueDate)
+    }
+    
+    const goToNew = () => {
+        navigate('/projects/new')
+    }
+    const onClickHandler = (item, idx) => {
+        if (idx === 3) {
+            axios.delete(`http://localhost:8000/api/deleteOne/${item._id}`)
+                .then(response => setchangeState(!changeState))
+                .catch(error => console.log(error))
         } else {
-            item.status[buttonID] = 0;
+            item.status = idx
+            axios.put(`http://localhost:8000/api/updateOne/${item._id}`,item)
+                .then(response => setchangeState(!changeState))
+                .catch(error => console.log(error))
         }
-        axios.put(`http://localhost:8000/api/updateOne/${item._id}`, item)
-        .then(response => setRefresh(!refresh))
-        .catch(error=>console.log(error))
     }
-    const changeHandler = (e, item) => {
-        item.team = e.target.value;
-        axios.put(`http://localhost:8000/api/updateOne/${item._id}`, item)
-        .then(response => setRefresh(!refresh))
-        .catch(error=>console.log(error))
-    }
-    return(
-        <div>
-            {teamColors.map((color, globalIndex) => (
-            <table style={{backgroundColor:color}} key={globalIndex}>
-                <thead>
-                    <tr>
-                        <th>Team</th>
-                        <th>Name</th>
-                        <th>Status</th>
-                    </tr>
-                    </thead>
-                        <tbody>
-                            {state.map((item, index) => (
-                                item.team === color ?
-                                <tr key={index}>
-                                    <td>
-                                        <select name="" onChange={(e) => changeHandler(e, item)} value={item.team}>
-                                            {teamColors.map((el, i) => (
-                                                <option key={i} value={el}>{el}</option>
-                                            ))}
-                                        </select>
-                                        
-                                    </td>
-                                    <td><Link style={{color:'yellow'}} to={`/edit/${item._id}`}>{item.name}</Link></td> 
-                                    <td>
-                                        <button onClick= {(e) => buttonHandler(e, item, 0)} style={{backgroundColor:item.status[0]===1?'green':'red'}}>{item.status[0] === 1 ? 'On' : 'Off'}</button>
-                                        <button onClick= {(e) => buttonHandler(e, item, 1)} style={{backgroundColor:item.status[1]===1?'green':'red'}}>{item.status[1] === 1 ? 'On' : 'Off'}</button>
-                                        <button onClick= {(e) => buttonHandler(e, item, 2)} style={{backgroundColor:item.status[2]===1?'green':'red'}}>{item.status[2] === 1 ? 'On' : 'Off'}</button>
-                                        <button onClick= {(e) => buttonHandler(e, item, 3)} style={{backgroundColor:item.status[3]===1?'green':'red'}}>{item.status[3] === 1 ? 'On' : 'Off'}</button>
-                                        <button onClick= {(e) => buttonHandler(e, item, 4)} style={{backgroundColor:item.status[4]===1?'green':'red'}}>{item.status[4] === 1 ? 'On' : 'Off'}</button>
-                                    </td>
-                                </tr>
-                                : null
-                            ))}
-                        </tbody>   
-            </table>
-            ))}
-        </div>
+        
+    return (
+        <>
+        <Paper elevation={3} style={styles.paper}>
+        <Card style={styles.card}><CardContent>
+        <div className="backlog">
+                <h2 onClick={sortDue} style={{backgroundColor: "#9FC5F8"}}>Backlog</h2>
+                {state.map((item, index) => (
+                    item.status === 0 ?
+                        <div key={index}>
+                            <h4>{item.name}</h4>
+                            <p style={{color:new Date(item.dueDate).getTime() - new Date().getTime() < 0 ? 'red':'black'}}>Due: {item.dueDate.substring(0,10)}</p>
+                            <Button style={{backgroundColor:"#FFE599"}} onClick={(e) => onClickHandler(item, 1)}>Start Project</Button>
+                      
+                        </div>
+                        : null
+                ))}
+            </div>
+            </CardContent></Card>
+            <Card style={styles.card}><CardContent>
+            <div className="progress">
+                <h2 onClick={sortDue} style={{backgroundColor:"#FFE599"}}>In Progress</h2>
+                {state.map((item, index) => (
+                    item.status === 1 ?
+                        <div key={index}>
+                            <h4>{item.name}</h4>
+                            <p style={{color:new Date(item.dueDate).getTime() - new Date().getTime() < 0 ? 'red':'black'}}>Due: {item.dueDate.substring(0,10)}</p>
+                            <Button style={{backgroundColor:"#B6D7A8"}} onClick={(e) => onClickHandler(item, 2)}>Move To Completed</Button>
+                        </div>
+                        : null
+                ))}
+            </div>
+            </CardContent></Card>
+            <Card style={styles.card}><CardContent>
+            <div className="completed">
+                <h2 onClick={sortDue} style={{backgroundColor:"#B6D7A8"}}>Completed</h2>
+                {state.map((item, index) => (
+                    item.status === 2 ?
+                        <div key={index}>
+                            <h4>{item.name}</h4>
+                            <p style={{color:new Date(item.dueDate).getTime() - new Date().getTime() < 0 ? 'red':'black'}}>Due: {item.dueDate.substring(0,10)}</p>
+                            <Button style={{backgroundColor:"#EA9999"}} onClick={(e) => onClickHandler(item, 3)}>Remove Project</Button>
+                </div>
+                        : null
+                ))}
+            </div>
+            </CardContent></Card>
+            </Paper>
+        <Button startIcon={<AddCircleOutlinedIcon />} style={{backgroundColor:"#9FC5F8", display:"inline-block", margin:"1px", textAlign: "left"}} onClick={goToNew}>Add New Project</Button>
+        </>
+        // <Paper elevation={3} style={styles.paper}>
+        // <div>
+        //     <PlayerHeader />
+        //     <h5 style={{textAlign: "left"}}>you are in dashboard.jsx</h5>
+        //     <table>
+        //         <thead>
+        //             <tr>
+        //                 <th >Player Name</th>
+        //                 <th>Preferred Position</th>
+        //                 <th onClick={sortDue}>Birthday (Sortable)</th>
+        //                 <th>Actions</th>
+        //             </tr>
+        //         </thead>
+        //         <tbody>
+        //             {state.map((item, index) => (
+        //                 <tr key={index}>
+        //                     <td><Link to={`/players/edit/${item._id}`}>{item.name}</Link></td>
+        //                     <td>{item.position}</td>
+        //                     <td onClick={(e)=> goToEdit(e,item)}>{item.birthday ? item.birthday.substring(0,10) : ""}</td>
+        //                     <td><DeleteButton playerId = {item._id} successCallback = {()=>deleteFromState()} /></td>
+        //                 </tr>
+        //             ))}
+        //         </tbody>
+        //     </table>
+        // </div>
+        // </Paper>
     )
 }
 
