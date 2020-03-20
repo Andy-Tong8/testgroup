@@ -1,0 +1,11 @@
+*DONE* dashboard should show a table of everyone and their attending status (on / Off for all 5 events)
+*DONE* data should be sorted with most recent createdAt on top <-- Andy will take this
+
+*DONE* team will determine which colored team they should be in. let's do {red, blue, green, white -> white is undecided} // no caps
+make the tables background color match the team they are on
+
+*DONE* add / edit do validations both backend and frontend <-- Lucie will take this
+when adding people, do not put them in teams. this should be done on dashboard
+when editing do not edit teams or status. both of these should be done on dashboard.
+
+show page backgroundcolor should change based on player status
